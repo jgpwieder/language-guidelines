@@ -1,0 +1,34 @@
+# Use the official Rust image.
+FROM rust:1.72.0 as builder
+
+# Create a new empty shell project
+RUN USER=root cargo new --bin actix-api
+WORKDIR /actix-api
+
+# Copy our manifests and fetch only the dependencies.
+COPY ./Cargo.lock ./Cargo.lock
+COPY ./Cargo.toml ./Cargo.toml
+RUN cargo fetch
+
+# Copy the source code.
+COPY ./src ./src
+
+# Build the release binary.
+RUN cargo build --release --target x86_64-unknown-linux-musl
+# This command instructs the Rust compiler (cargo) to build the Rust application in 
+# release mode (--release) for the specified target architecture (--target x86_64-unknown-linux-musl). 
+# The x86_64-unknown-linux-musl target indicates that you want to build a statically linked binary that 
+# is compatible with the Musl C library. A statically linked binary includes all necessary libraries within 
+# the binary itself, making it self-contained and not dependent on external shared libraries.
+
+# Final base image
+FROM debian:buster-slim
+
+# Copy the statically linked binary from the builder stage.
+COPY --from=builder /actix-api/target/x86_64-unknown-linux-musl/release/actix-api /usr/local/bin/actix-api
+# copies the statically linked binary (actix-api) from the builder stage (the first stage) 
+# to the /usr/local/bin directory in the final Docker image. This binary is the compiled 
+# Rust application that you built in the first stage.
+
+# Set the startup command to run the binary.
+CMD ["actix-api"]
