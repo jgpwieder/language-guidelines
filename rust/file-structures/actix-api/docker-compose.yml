@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  myapp:
+    build: .
+    ports:
+      - "8000:8000" # Expose the port that your application listens on
