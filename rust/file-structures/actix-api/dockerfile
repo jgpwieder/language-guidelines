@@ -1,34 +1,34 @@
-# Use the official Rust image.
-FROM rust:1.72.0 as builder
+# syntax=docker/dockerfile:1.2
+
+# Use a specific version of the Rust image to compile our application.
+FROM rust:1.56.1 as builder
+
+# Add the MUSL target required for Alpine
+RUN rustup target add x86_64-unknown-linux-musl
 
 # Create a new empty shell project
-RUN USER=root cargo new --bin actix-api
-WORKDIR /actix-api
+RUN USER=root cargo new --bin actix_api
+WORKDIR /actix_api
 
-# Copy our manifests and fetch only the dependencies.
-COPY ./Cargo.lock ./Cargo.lock
+# Copy the Cargo manifest files into the new project directory
 COPY ./Cargo.toml ./Cargo.toml
-RUN cargo fetch
+COPY ./Cargo.lock ./Cargo.lock
 
-# Copy the source code.
+# Build only the dependencies to cache them
+RUN cargo build --release --target x86_64-unknown-linux-musl
+RUN rm src/*.rs
+
+# Copy the source code
 COPY ./src ./src
 
-# Build the release binary.
+# Build the application
 RUN cargo build --release --target x86_64-unknown-linux-musl
-# This command instructs the Rust compiler (cargo) to build the Rust application in 
-# release mode (--release) for the specified target architecture (--target x86_64-unknown-linux-musl). 
-# The x86_64-unknown-linux-musl target indicates that you want to build a statically linked binary that 
-# is compatible with the Musl C library. A statically linked binary includes all necessary libraries within 
-# the binary itself, making it self-contained and not dependent on external shared libraries.
 
-# Final base image
-FROM debian:buster-slim
+# Use the Alpine Linux image for the final runtime
+FROM alpine:3.14
 
-# Copy the statically linked binary from the builder stage.
-COPY --from=builder /actix-api/target/x86_64-unknown-linux-musl/release/actix-api /usr/local/bin/actix-api
-# copies the statically linked binary (actix-api) from the builder stage (the first stage) 
-# to the /usr/local/bin directory in the final Docker image. This binary is the compiled 
-# Rust application that you built in the first stage.
+# Copy the statically-linked executable from the builder stage
+COPY --from=builder /actix_api/target/x86_64-unknown-linux-musl/release/actix_api /usr/local/bin/
 
-# Set the startup command to run the binary.
-CMD ["actix-api"]
+# Set the CMD to your executable
+CMD ["actix_api"]
