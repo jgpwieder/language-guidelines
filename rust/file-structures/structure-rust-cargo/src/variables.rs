@@ -54,19 +54,6 @@ pub fn run_variable_demo() {
 }
 
 
-pub fn first_word(s: &String) -> usize {
-    let bytes = s.as_bytes();
-
-    for (i, &item) in bytes.iter().enumerate() { // Note thar .enumarate() returns a reference to the item
-        if item == b' ' {
-            return i;
-        }
-    }
-
-    s.len()
-}
-
-
 // Notes:
 // RUST WILL NEVER CREATE DEEP COPIES OD DATA!
 // - Note1: 
