@@ -15,7 +15,7 @@ fn get_string_input() -> String {
 
 
 pub fn run_guessing_game() {
-    println!("Do you want to play a guessing game? (y/N)");
+    println!("Do you want to play a guessing game? (Y/n)");
 
     let run_game = get_string_input();
     let end_game = String::from("n");

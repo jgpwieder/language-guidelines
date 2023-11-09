@@ -25,6 +25,11 @@ pub fn run_slice_demo() {
     let word_slice = first_word(&string);
     // string.clear(); //-> Rust does not let it happen due to muttable borrow -> WOW!
     println!("word_slice = {}", word_slice);
+
+    // You can also have slices of arrays
+    let a = [1, 2, 3, 4, 5];
+    let slice = &a[1..3];
+    assert_eq!(slice, &[2, 3]);
 }
 
 
@@ -40,7 +45,8 @@ pub fn first_word_index(string: &String) -> usize {
     string.len()
 }
 
-
+// Slices of string literals are the same, so a better approach would be to 
+// take a slice as a parameter to be more flexible
 fn first_word(s: &String) -> &str {
     let bytes = s.as_bytes();
 

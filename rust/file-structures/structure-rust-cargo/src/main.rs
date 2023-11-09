@@ -1,4 +1,5 @@
 mod slices;
+mod structs;
 mod variables;
 mod guessing_game;
  
@@ -14,4 +15,5 @@ fn main() {
     variables::run_variable_demo();
     guessing_game::run_guessing_game();
     slices::run_slice_demo();
+    structs::run_struct_demo()
 }
