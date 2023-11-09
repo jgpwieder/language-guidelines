@@ -18,7 +18,7 @@ Cargo.lock
 # The directory `.rustup` and `.cargo` stores Rust versions and installed crates respectively.
 # These can be recreated with `rustup update` and `cargo install`.
 /.rustup/
-/.cargo/
+# /.cargo/
 
 # The `node_modules` directory is typically used by projects that also include front-end components.
 /node_modules/
