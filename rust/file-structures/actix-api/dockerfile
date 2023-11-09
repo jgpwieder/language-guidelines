@@ -1,6 +1,16 @@
 # Use the official Rust image.
 FROM rust:1.72.0 as builder
 
+# Install musl-tools for musl-gcc, rust 1.72.0 does not have it
+RUN apt update && apt install -y musl-tools
+
+# Find out what the installed musl-gcc binary is called and where it is located
+RUN ln -s "$(which musl-gcc)" /usr/local/bin/musl-gcc || true
+RUN musl-gcc --version # This line is to verify that musl-gcc is callable
+
+# Add the target for musl
+RUN rustup target add x86_64-unknown-linux-musl
+
 # Create a new empty shell project
 RUN USER=root cargo new --bin actix-api
 WORKDIR /actix-api

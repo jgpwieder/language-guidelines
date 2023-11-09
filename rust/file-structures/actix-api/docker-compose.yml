@@ -4,3 +4,5 @@ services:
     build: .
     ports:
       - "8000:8000" # Expose the port that your application listens on
+    environment:
+      - RUST_LOG=debug # Example environment variable, adjust as needed

@@ -79,15 +79,19 @@ cargo build --release --target x86_64-unknown-linux-musl -jN
 ```
 Replacing N with the desired number of cores.
 
+## Finally compose
+```sh
+ docker-compose up --build
+```
 
 # Postegris:
 
 ## Run Postgres docker:
 ```sh
 docker run -p 5432:5432 -d \
-    -e POSTGRES_PASSWORD=postgres \
-    -e POSTGRES_USER=postgres \
-    -e POSTGRES_DB=stripe-example \
+    -e POSTGRES_PASSWORD=joao \    
+    -e POSTGRES_USER=joao \    
+    -e POSTGRES_DB=joao-test \     
     -v pgdata:/var/lib/postgresql/data \
     postgres
 ```
