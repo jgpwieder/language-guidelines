@@ -5,7 +5,11 @@ fn pass_value(a_string: String) -> String {
 }
 
 
-fn pass_reference(a_string: &mut String) {
+fn pass_reference(_a_string: & String) {
+}
+
+
+fn pass_mutable_reference(a_string: &mut String) {
     a_string.push_str(" - mutated");
 }
 
@@ -18,6 +22,7 @@ pub fn run_variable_demo() {
     println!("string_literal = {}", string_literal);
     println!("string = {}", string);
     
+    // -> COPYING VARIABLES
     let string1 = string.clone();
     println!("string1 = {}", string1);
     println!("string = {}", string);
@@ -26,20 +31,41 @@ pub fn run_variable_demo() {
     println!("string2 = {}", string2);
     // println!("string = {}", string); -> This generates an error for varaibles that are not simple (in stack) due to Note1
 
-    let string3 = pass_value(string1);
+    // -> PASSING VARIABLE TO FUNCTION
+    pass_value(string1); 
     // println!("string1 = {}", string1); -> This generates an error because heap is freed when variable is returned due to Note2
+
+    let string3 = pass_value(string2); // Tedious to have to return passed values everytime
     println!("string3 = {}", string3);
 
-    let string3 = pass_value(string3); // Tedious to do this to every variable, can pass as refference with &
+    pass_reference(&string3); // Can pass as refference with &
     println!("string3 = {}", string3);
 
     let mut string3 = String::from(string_literal); // -> heap -> passed as mutable reference, MAKES IT SO CLEAR THAT IT WILL CHANGE IT
     let string3_ref1 = &mut string3;
-    // let _string3_ref2 = &mut string3; -> Cannot have 2 mutable references active. Prevents data races
-    pass_reference(string3_ref1);
+    // let _string3_ref2 = &mut string3; //-> Cannot have 2 mutable references to the same variable with scopes that coexist. Prevents data races
+    // println!("r2: {}, r3: {}", string3_ref1, _string3_ref2); -> Needed for error since the scope of the reference goes untill the last time it was used
+
+    pass_mutable_reference(string3_ref1);
     println!("string3 = {}", string3);
-    let _string3_ref2 = &mut string3; // After inactivated by called function ending you can
+    let _string3_ref2 = &mut string3; // After inactivated by called function ending you can have another mutable reference
+    // let _string3_ref3 = & string3; //-> Also cannot have mutable and immutable references to the same variable -> prevents dangling references (pointers to values that were freed)
+    // println!("r2: {}, r3: {}", _string3_ref2, _string3_ref3);
 }
+
+
+pub fn first_word(s: &String) -> usize {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() { // Note thar .enumarate() returns a reference to the item
+        if item == b' ' {
+            return i;
+        }
+    }
+
+    s.len()
+}
+
 
 // Notes:
 // RUST WILL NEVER CREATE DEEP COPIES OD DATA!
