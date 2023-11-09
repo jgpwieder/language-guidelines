@@ -1,16 +1,23 @@
 
+# Cargo:
 
-Create cargo project
-```
-cargo new import_test
+## Create cargo project:
+
+cd to the desired directoty and run:
+```sh
+cargo new project_name
 ```
 
-Build new project
-```
+## Build cargo project:
+
+cd to the project's directoty and run:
+```sh
 cargo build
 ```
 
-Run new project
-```
-./target/debug/import_test
+## Run executable:
+
+cd to the project's directoty and run:
+```sh
+./target/debug/project_name
 ```

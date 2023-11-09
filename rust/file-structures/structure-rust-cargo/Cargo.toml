@@ -1,5 +1,5 @@
 [package]
-name = "import_test"
+name = "rust-test"
 version = "0.1.0"
 edition = "2021"
 
