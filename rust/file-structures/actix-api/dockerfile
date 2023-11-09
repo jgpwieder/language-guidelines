@@ -1,27 +1,34 @@
-# Use the official Rust image.
-FROM rust:1.72.0 as builder
+# Start from the muslrust image 
+FROM clux/muslrust:stable as builder
 
-# Install musl-tools for musl-gcc, rust 1.72.0 does not have it
-RUN apt update && apt install -y musl-tools
-
-# Find out what the installed musl-gcc binary is called and where it is located
-RUN ln -s "$(which musl-gcc)" /usr/local/bin/musl-gcc || true
-RUN musl-gcc --version # This line is to verify that musl-gcc is callable
-
-# Add the target for musl
-RUN rustup target add x86_64-unknown-linux-musl
-
-# Create a new empty shell project
-RUN USER=root cargo new --bin actix-api
-WORKDIR /actix-api
-
+# # Use the official Rust image.
+# # FROM rust:1.72.0 as builder
+# # Install musl-tools for musl-gcc, rust 1.72.0 does not have it
+# RUN apt update && apt install -y musl-tools=
+# # Find out what the installed musl-gcc binary is called and where it is located
+# RUN ln -s "$(which musl-gcc)" /usr/local/bin/musl-gcc || true
+# RUN musl-gcc --version # This line is to verify that musl-gcc is callable
+# # Add the target for musl
+# RUN rustup target add x86_64-unknown-linux-musl
+# # Create a new empty shell project
+# RUN USER=root cargo new --bin actix-api
+# WORKDIR /actix-api
 # Copy our manifests and fetch only the dependencies.
-COPY ./Cargo.lock ./Cargo.lock
-COPY ./Cargo.toml ./Cargo.toml
+# COPY ./Cargo.lock ./Cargo.lock
+# COPY ./Cargo.toml ./Cargo.toml
+# RUN cargo fetch
+
+WORKDIR /usr/src/actix-api
+
+# Copy our manifests
+COPY ./Cargo.toml ./Cargo.lock ./
+
+# This step ensures that your dependencies are cached, only re-fetching if these files change
 RUN cargo fetch
 
 # Copy the source code.
 COPY ./src ./src
+RUN ls -al ./src
 
 # Build the release binary.
 RUN cargo build --release --target x86_64-unknown-linux-musl
@@ -35,7 +42,8 @@ RUN cargo build --release --target x86_64-unknown-linux-musl
 FROM debian:buster-slim
 
 # Copy the statically linked binary from the builder stage.
-COPY --from=builder /actix-api/target/x86_64-unknown-linux-musl/release/actix-api /usr/local/bin/actix-api
+COPY --from=builder /usr/src/actix-api/target/x86_64-unknown-linux-musl/release/actix-api /usr/local/bin/
+# COPY --from=builder /actix-api/target/x86_64-unknown-linux-musl/release/actix-api /usr/local/bin/actix-api
 # copies the statically linked binary (actix-api) from the builder stage (the first stage) 
 # to the /usr/local/bin directory in the final Docker image. This binary is the compiled 
 # Rust application that you built in the first stage.

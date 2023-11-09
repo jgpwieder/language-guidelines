@@ -89,19 +89,38 @@ Replacing N with the desired number of cores.
 ## Run Postgres docker:
 ```sh
 docker run -p 5432:5432 -d \
-    -e POSTGRES_PASSWORD=joao \    
-    -e POSTGRES_USER=joao \    
-    -e POSTGRES_DB=joao-test \     
+    -e POSTGRES_PASSWORD=joaodb \    
+    -e POSTGRES_USER=joaodb \    
+    -e POSTGRES_DB=joaodb \     
     -v pgdata:/var/lib/postgresql/data \
+    postgres
+```
+```sh
+docker run -p 5432:5432 -d 
+    --name joaodb 
+    -e POSTGRES_PASSWORD=joaodb 
+    -e POSTGRES_USER=joaodb 
+    -e POSTGRES_DB=joaodb 
     postgres
 ```
 
 ## Connect:
 ```sh
-psql stripe-example -h localhost -U postgres
+docker ps
 ```
 
 ```sh
-docker exec -it bdca2b8c09b7 psql -U postgres stripe-example
+docker exec -it CONTAINER_ID psql -U postgres
+```
+
+List databases:
+```sql
+SELECT datname FROM pg_database;
+```
+
+```sql
+CREATE USER mynewuser WITH PASSWORD 'newpassword';
+ALTER ROLE mynewuser CREATEDB;
+GRANT ALL PRIVILEGES ON DATABASE mydatabase TO mynewuser;
 ```
 source: https://www.youtube.com/watch?v=G3gnMSyX-XM
