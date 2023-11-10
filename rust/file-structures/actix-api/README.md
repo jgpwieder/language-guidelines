@@ -29,19 +29,19 @@ The binary actix-api is compiled with a version of the GNU C Library (GLIBC) tha
 ## Must add the x86_64-unknown-linux-musl target:
 Using the rustup target add command.
 ```sh
-rustup target add x86_64-unknown-linux-musl
+rustup target add x86_64-unknown-linux-gnu
 ```
 
 ## Install musl cross if not installed:
 ```sh
-brew install FiloSottile/musl-cross/musl-cross
+# Currently, there is no equivalent of musl-cross for GNU in Homebrew for macOS. Cross-compiling for GNU/Linux on macOS is non-trivial and typically involves using a Docker container with a GNU/Linux environment for compatibility.
 ```
 
 NOTE: May not be in PATH, if not:
 
 1 Find it's path:
 ```sh
-brew --prefix musl-cross
+brew --prefix gcc
 ```
 
 2 Edit path:
@@ -50,6 +50,12 @@ Add the /bin to the end of the output of previous command and add to your PATH
 cd ~
 nano .zshrc
 ```
+
+Add:
+```sh
+export PATH="/path/to/gcc/bin:$PATH"
+
+```
 ex: "/opt/homebrew/opt/musl-cross" + "/bin"
 
 ## Add configuration:
@@ -57,8 +63,11 @@ ex: "/opt/homebrew/opt/musl-cross" + "/bin"
 2 - create "config" file with no extension 
 3 - add the folllowing to the file:
 ```
-[target.x86_64-unknown-linux-musl]
-linker = "/opt/homebrew/opt/musl-cross/bin/x86_64-linux-musl-gcc"
+[target.x86_64-unknown-linux-gnu]
+linker = "gcc"  
+# OR if the gcc you have is from homebrew, could be: 
+linker = "/opt/homebrew/opt/gcc/bin/gcc"
+# Go there snd try to find executable
 ```
 
 x86_64-linux-musl-gcc
@@ -67,17 +76,10 @@ NOTE: This is setup for a debian image, will not run in mac.
 
 Once the target is added, you can rebuild your Rust binary with the --target flag to specify the target architecture:
 ```sh
-cargo build --release --target x86_64-unknown-linux-musl
+cargo build --release --target x86_64-unknown-linux-gnu
 # for more info:
-cargo build --release --target x86_64-unknown-linux-musl -v 
+cargo build --release --target x86_64-unknown-linux-gnu -v
 ```
-
-NOTE: Tou can speed it up using parallel compilation with the -j or --jobs flag with make (or gmake, which is the GNU Make command on some systems), you need to specify the number of CPU cores you want to use with the following:
-
-```sh OPTIONAL
-cargo build --release --target x86_64-unknown-linux-musl -jN
-```
-Replacing N with the desired number of cores.
 
 ## Finally compose
 ```sh
