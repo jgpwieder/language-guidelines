@@ -1,0 +1,30 @@
+FROM rust:1.56.1 as builder
+
+# Add the GNU target required
+RUN rustup target add x86_64-unknown-linux-gnu
+
+# Create a new empty shell project
+RUN USER=root cargo new --bin actix_api
+WORKDIR /actix_api
+
+# Copy the Cargo manifest files into the new project directory
+COPY ./Cargo.toml ./Cargo.toml
+COPY ./Cargo.lock ./Cargo.lock
+
+# Build only the dependencies to cache them
+RUN cargo build --release --target x86_64-unknown-linux-musl
+RUN rm src/*.rs
+
+# Copy the source code
+COPY ./src ./src
+
+# Build the application for GNU target
+RUN cargo build --release --target x86_64-unknown-linux-gnu
+
+# Use a glibc-based image for the final runtime
+FROM alpine:3.14
+
+# Copy the dynamically-linked executable from the builder stage
+COPY --from=builder /actix_api/target/x86_64-unknown-linux-gnu/release/actix_api /usr/local/bin/
+
+CMD ["actix_api"]

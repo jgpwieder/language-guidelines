@@ -1,5 +1,6 @@
 mod api;  // The compiler will look for the mod.rs file inside the api folder
 
+
 use api::task::{
     get_task
 };
@@ -18,7 +19,7 @@ async fn main() -> std::io::Result<()> {
         .wrap(logger)
         .service(get_task)
     })
-    .bind(("127.0.0.1", 80))?
+    .bind(("127.0.0.1", 8000))?
     .run()
     .await
 }
