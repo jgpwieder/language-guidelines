@@ -99,12 +99,8 @@ docker run -p 5432:5432 -d \
     postgres
 ```
 ```sh
-docker run -p 5432:5432 -d 
-    --name joaodb 
-    -e POSTGRES_PASSWORD=joaodb 
-    -e POSTGRES_USER=joaodb 
-    -e POSTGRES_DB=joaodb 
-    postgres
+docker run -p 5432:5432 -d --name joaodb -e POSTGRES_PASSWORD=joaodb -e POSTGRES_USER=joaodb -e POSTGRES_DB=joaodb postgres
+
 ```
 
 ## Connect:
