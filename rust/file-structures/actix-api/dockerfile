@@ -1,10 +1,7 @@
-# syntax=docker/dockerfile:1.2
-
-# Use a specific version of the Rust image to compile our application.
 FROM rust:1.56.1 as builder
 
-# Add the MUSL target required for Alpine
-RUN rustup target add x86_64-unknown-linux-musl
+# Add the GNU target required
+RUN rustup target add x86_64-unknown-linux-gnu
 
 # Create a new empty shell project
 RUN USER=root cargo new --bin actix_api
@@ -21,14 +18,13 @@ RUN rm src/*.rs
 # Copy the source code
 COPY ./src ./src
 
-# Build the application
-RUN cargo build --release --target x86_64-unknown-linux-musl
+# Build the application for GNU target
+RUN cargo build --release --target x86_64-unknown-linux-gnu
 
-# Use the Alpine Linux image for the final runtime
+# Use a glibc-based image for the final runtime
 FROM alpine:3.14
 
-# Copy the statically-linked executable from the builder stage
-COPY --from=builder /actix_api/target/x86_64-unknown-linux-musl/release/actix_api /usr/local/bin/
+# Copy the dynamically-linked executable from the builder stage
+COPY --from=builder /actix_api/target/x86_64-unknown-linux-gnu/release/actix_api /usr/local/bin/
 
-# Set the CMD to your executable
 CMD ["actix_api"]
