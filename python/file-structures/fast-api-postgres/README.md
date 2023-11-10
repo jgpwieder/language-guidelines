@@ -29,3 +29,20 @@ To provide memory restrictions
 ```sh
 docker run -it -p 8000:8000 --cpus='0.25' --memory='0.5GB' fast-api-test
 ```
+
+# Monitoring:
+
+Create a docker network
+```sh
+docker network create monitoring
+```
+
+Run prometheus container:
+```sh
+docker run -d --name prometheus -p 9090:9090 --network monitoring prom/prometheus
+```
+
+Run Grafana container
+```sh
+docker run -d --name grafana -p 3000:3000 --network monitoring grafana/grafana
+```
